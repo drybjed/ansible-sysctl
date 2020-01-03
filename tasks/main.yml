@@ -21,14 +21,14 @@
 - name: Check sysctl command capabilities
   shell: sysctl --help | grep -E '^\s+\-\-system\s+' || true
   register: sysctl__register_system
-  when: sysctl__register_config|changed
+  when: sysctl__register_config is changed
   check_mode: False
 
 - name: Apply kernel parameters if they were modified
   command: '{{ "sysctl --system"
                if (sysctl__register_system.stdout != "")
                else ("sysctl -e -p " + sysctl__config_file) }}'
-  when: sysctl__register_config|changed
+  when: sysctl__register_config is changed
 
 - name: Post hooks
   include: '{{ lookup("task_src", "sysctl/post_main.yml") }}'
